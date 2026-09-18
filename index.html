@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#4f46e5" />
+  <title>FairShare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <section id="authView" class="auth-shell">
+    <div class="auth-card">
+      <div class="brand brand-center"><div class="mark">F</div><div><strong>FairShare</strong><span>Split expenses, not friendships.</span></div></div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth-tab="login">Log in</button>
+        <button class="auth-tab" data-auth-tab="signup">Sign up</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Email<input id="loginEmail" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="••••••••"></label>
+        <button class="primary wide" type="submit">Log in</button>
+      </form>
+
+      <form id="signupForm" class="auth-form hidden">
+        <label>Name<input id="signupName" type="text" autocomplete="name" required placeholder="Your name"></label>
+        <label>Email<input id="signupEmail" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="signupPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Minimum 6 characters"></label>
+        <button class="primary wide" type="submit">Create account</button>
+      </form>
+      <p class="auth-note">Free stack: Supabase Auth + Postgres, deployed as a static site.</p>
+    </div>
+  </section>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand"><div class="mark">F</div><div><strong>FairShare</strong><span>Shared expenses</span></div></div>
+      <nav class="nav">
+        <button class="active" data-tab="dashboard">Dashboard</button>
+        <button data-tab="friends">Friends</button>
+        <button data-tab="groups">Groups</button>
+      </nav>
+      <div class="sidebottom">
+        <div class="mini-profile"><div class="avatar" id="sideAvatar">Y</div><div><strong id="sideName">You</strong><span id="sideEmail"></span></div></div>
+        <button id="logoutBtn">Log out</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><h1 id="pageTitle">Dashboard</h1><p id="pageSub">Your shared expenses at a glance.</p></div>
+        <div id="topActions"></div>
+      </header>
+      <section id="dashboard" class="page"></section>
+      <section id="friends" class="page hidden"></section>
+      <section id="groups" class="page hidden"></section>
+      <section id="groupDetail" class="page hidden"></section>
+    </main>
+  </div>
+
+  <div class="modalback" id="modal"><div class="modal" id="modalContent"></div></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
