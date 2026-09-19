@@ -273,3 +273,141 @@ main{min-width:0;padding:28px 34px 44px}
 .account-card:hover{border-color:#a9dff3;box-shadow:var(--shadow-sm)}
 .account-avatar-wrap .avatar{width:34px;height:34px}
 .account-email{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+
+/* Rekapuang v6 — brand assets, richer presets, group icons, mobile-first polish */
+:root{
+  --brand-blue:#0066B3;
+  --brand-blue-2:#1677D2;
+  --brand-cyan:#42D6C5;
+  --accent:#0066B3;
+  --accent-hover:#00579a;
+  --accent-soft:#edf6fc;
+  --text:#102f49;
+  --bg:#f5f9fc;
+}
+
+/* Supplied Rekapuang artwork */
+.brand-wordmark{display:block;width:100%;height:auto;object-fit:contain}
+.sidebar-brand{padding:0 6px;min-height:48px}
+.sidebar-brand .brand-wordmark{width:176px;max-height:56px;object-position:left center}
+.auth-brand{margin-bottom:24px}
+.auth-brand .brand-wordmark{width:min(260px,80%);max-height:86px}
+
+/* Page / group identity */
+.page-title-with-icon{display:flex;align-items:center;gap:11px;min-width:0}
+.page-title-with-icon>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.group-icon{font-size:13px}
+.group-icon.emoji-group-icon{font-size:22px;background:#eef7fc;color:inherit}
+.title-group-icon{width:42px;height:42px;flex:0 0 42px;margin:0;border-radius:13px;font-size:24px;box-shadow:inset 0 0 0 1px #dcecf6}
+.settings-group-icon{width:42px;height:42px;flex:0 0 42px;margin:0;font-size:23px}
+.settings-icon-row{display:flex!important;align-items:center;gap:12px;text-align:left;padding:11px 12px!important}
+.settings-icon-row>span{display:grid;gap:2px;flex:1;min-width:0}
+.settings-icon-row small{font-weight:500;color:var(--muted)}
+.settings-icon-row>b{font-size:22px;color:#9aa6b2}
+.group-icon-picker{max-height:250px;overflow:auto;padding:2px 2px 5px;overscroll-behavior:contain}
+
+/* Touch feedback */
+button,.group-card,.account-card,.check{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button,.group-card{transition-timing-function:cubic-bezier(.2,.8,.2,1)!important}
+button.pressing,.group-card.pressing{transform:scale(.975)!important}
+.ripple-surface{position:relative;overflow:hidden}
+.tap-ripple{position:absolute;border-radius:50%;background:rgba(0,102,179,.13);transform:scale(0);pointer-events:none;z-index:20;animation:tapRipple .52s ease-out forwards}
+.primary .tap-ripple,.danger .tap-ripple{background:rgba(255,255,255,.25)}
+@keyframes tapRipple{to{transform:scale(1);opacity:0}}
+
+/* Softer modal movement */
+.modalback{opacity:0;transition:opacity .2s ease;display:grid;visibility:hidden;pointer-events:none}
+.modalback.show{opacity:1;visibility:visible;pointer-events:auto}
+.modal{transform:translateY(12px) scale(.985);opacity:0;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .18s ease}
+.modal.modal-enter{transform:translateY(0) scale(1);opacity:1}
+body.modal-open{overflow:hidden}
+
+/* Better picker density with 24 choices */
+.avatar-picker{grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.avatar-choice{height:50px;border-radius:13px;font-size:24px;box-shadow:0 1px 2px rgba(16,47,73,.025)}
+.avatar-choice:active{transform:scale(.93)}
+.avatar-choice.selected{box-shadow:0 0 0 2px rgba(0,102,179,.10) inset}
+
+/* Navigation icon labels */
+.nav button{display:flex;align-items:center;gap:10px}
+.nav-icon{display:grid;place-items:center;width:22px;font-size:18px;line-height:1}
+
+/* More mobile-friendly targets */
+.primary,.secondary,.danger,.danger-outline,.more-btn{min-height:44px}
+.small-btn{min-height:36px}
+.close{min-width:44px;min-height:44px;display:grid;place-items:center;margin:-9px -9px 0 0;border-radius:50%}
+.close:hover{background:#f2f6f9}
+
+@media(max-width:760px){
+  html,body{overscroll-behavior-y:none}
+  .sidebar{
+    padding:7px 10px calc(7px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    box-shadow:0 -5px 24px rgba(16,47,73,.07)
+  }
+  .nav{gap:4px}
+  .nav button{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;min-height:54px;padding:6px 4px;border-radius:12px;font-size:10.5px}
+  .nav-icon{height:21px;font-size:19px}
+  main{padding:14px 13px calc(92px + env(safe-area-inset-bottom))}
+  .topbar{gap:12px;margin-bottom:14px}
+  .topbar h1{font-size:23px}
+  .topbar p{font-size:12px;margin-top:4px}
+  #topActions{display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start;width:calc(100vw - 26px);max-width:100%;overflow-x:auto;padding:2px 1px 5px;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  #topActions::-webkit-scrollbar{display:none}
+  #topActions>button{width:auto!important;min-width:max-content;flex:0 0 auto;scroll-snap-align:start;padding:9px 13px;min-height:41px}
+  .hero-card{padding:19px;border-radius:17px;gap:16px;background:linear-gradient(135deg,#005ca3,#0b7cc5)}
+  .hero-card h2{font-size:21px}.hero-card p{font-size:12px}.hero-card .primary{width:100%}
+  .summary,.summary-four{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .account-card{grid-column:1/-1}
+  .card{padding:14px 14px;border-radius:14px}
+  .metric strong{font-size:18px}
+  .metric-money-lines strong{font-size:16px!important}
+  .panel{padding:15px;border-radius:15px}
+  .group-card{padding:15px;min-height:142px}
+  .group-card .group-icon{margin-bottom:9px}
+  .group-card h3{font-size:15px;margin-top:7px;padding-right:26px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .group-card p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:22px}
+  .groups-grid{gap:10px}
+  .row{padding:12px 0;gap:10px}
+  .row .grow strong{font-size:13px}.row .grow span{font-size:10.5px}
+  .amt strong{font-size:13px}
+  .cash-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .cash-summary>div{padding:11px}
+  .modalback{align-items:end;padding:0}
+  .modal{width:100%;max-width:none;max-height:min(90dvh,760px);border-radius:24px 24px 0 0;padding:20px 17px calc(18px + env(safe-area-inset-bottom));transform:translateY(28px);box-shadow:0 -18px 70px rgba(15,35,55,.22)}
+  .modal.modal-enter{transform:translateY(0)}
+  .modalhead{position:sticky;top:-20px;background:#fff;z-index:4;padding:3px 0 10px;margin-bottom:-2px}
+  .form-grid{gap:13px;margin-top:12px}
+  .auth-shell{padding:18px}
+  .auth-card{padding:24px 20px;border-radius:20px}
+  .auth-brand .brand-wordmark{width:min(245px,88%)}
+  .avatar-picker{grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+  .avatar-choice{height:48px;font-size:23px}
+  .group-icon-picker{max-height:226px}
+}
+
+@media(max-width:430px){
+  main{padding-left:11px;padding-right:11px}
+  #topActions{width:calc(100vw - 22px)}
+  .summary,.summary-four{gap:8px}
+  .card{padding:13px 12px}
+  .card>.muted{font-size:10.5px}
+  .metric strong{font-size:17px}
+  .panel{padding:14px 13px}
+  .head h2{font-size:16px}
+  .head p{font-size:11px}
+  .groups-grid{grid-template-columns:1fr 1fr}
+  .group-card{min-height:150px;padding:13px}
+  .group-card .pill{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .group-card .card-arrow{right:12px;bottom:12px}
+  .avatar-picker{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .avatar-choice{height:44px;font-size:21px;border-radius:12px}
+  .form-row{grid-template-columns:1fr}
+  .money-input{grid-template-columns:94px 1fr}
+  .check{padding:9px}
+  .toast{left:12px;right:12px;bottom:calc(80px + env(safe-area-inset-bottom));text-align:center}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}
+}

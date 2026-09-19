@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#28b4e8" />
+  <meta name="theme-color" content="#0066B3" />
+  <link rel="icon" type="image/svg+xml" href="assets/rekapuang-icon.svg" />
   <title>Rekapuang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +16,7 @@
 
   <section id="authView" class="auth-shell">
     <div class="auth-card">
-      <div class="brand brand-center"><div class="mark">R</div><div><strong>Rekapuang</strong><span>Catat bareng. Beres bareng.</span></div></div>
+      <div class="brand brand-center auth-brand"><img class="brand-wordmark" src="assets/rekapuang-logo.svg" alt="Rekapuang" /></div>
       <div class="auth-tabs">
         <button class="auth-tab active" data-auth-tab="login">Log in</button>
         <button class="auth-tab" data-auth-tab="signup">Sign up</button>
@@ -39,11 +40,11 @@
 
   <div id="appView" class="app hidden">
     <aside class="sidebar">
-      <div class="brand"><div class="mark">R</div><div><strong>Rekapuang</strong><span>Shared expenses</span></div></div>
+      <div class="brand sidebar-brand"><img class="brand-wordmark" src="assets/rekapuang-logo.svg" alt="Rekapuang" /></div>
       <nav class="nav">
-        <button class="active" data-tab="dashboard">Dashboard</button>
-        <button data-tab="friends">Friends</button>
-        <button data-tab="groups">Groups</button>
+        <button class="active" data-tab="dashboard"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+        <button data-tab="friends"><span class="nav-icon">◎</span><span>Friends</span></button>
+        <button data-tab="groups"><span class="nav-icon">▦</span><span>Groups</span></button>
       </nav>
       <div class="sidebottom">
         <button class="mini-profile profile-button" type="button" onclick="showAvatarPicker()" title="Change avatar"><div class="avatar" id="sideAvatar">Y</div><div class="profile-copy"><strong id="sideName">You</strong><span id="sideEmail"></span></div><span class="edit-avatar">Edit</span></button>
