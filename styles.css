@@ -501,3 +501,38 @@ body.modal-open{overflow:hidden}
   .pull-refresh-icon{display:inline-grid;place-items:center;width:20px;height:20px;font-size:18px;line-height:1}
   @keyframes rekapuang-spin{to{transform:rotate(360deg)}}
 }
+
+/* v8.6 mobile settlement polish */
+@media (max-width: 768px){
+  /* Keep settlement CTA readable and aligned under the transfer details. */
+  .mobile-settle-row .settle-btn{
+    grid-column:2 / 4;
+    justify-self:start;
+    width:auto;
+    min-width:max-content;
+    max-width:100%;
+    margin-top:1px;
+    padding:8px 12px;
+    min-height:34px;
+    border-radius:999px;
+    font-size:12px;
+    line-height:1;
+    white-space:nowrap;
+  }
+
+  /* Prevent generic mobile row rules from squeezing the action into the avatar column. */
+  .mobile-settle-row > .settle-btn{align-self:center}
+
+  /* More breathing room between suggested transfers. */
+  .mobile-settle-row{row-gap:8px;padding:12px 0}
+
+  /* Keep the transfer amount visually aligned with the main row. */
+  .mobile-settle-amount{align-self:center;text-align:right}
+
+  /* Make sure the fixed action buttons do not cover the last activity rows. */
+  .mobile-group-body{padding-bottom:150px}
+
+  /* Slightly improve text legibility on narrow phones. */
+  .mobile-settle-copy strong{line-height:1.25}
+  .mobile-settle-copy span{line-height:1.3}
+}
