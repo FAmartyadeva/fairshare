@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#4f46e5" />
-  <title>FairShare</title>
+  <meta name="theme-color" content="#28b4e8" />
+  <title>Rekapuang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
 
   <section id="authView" class="auth-shell">
     <div class="auth-card">
-      <div class="brand brand-center"><div class="mark">F</div><div><strong>FairShare</strong><span>Split expenses, not friendships.</span></div></div>
+      <div class="brand brand-center"><div class="mark">R</div><div><strong>Rekapuang</strong><span>Catat bareng. Beres bareng.</span></div></div>
       <div class="auth-tabs">
         <button class="auth-tab active" data-auth-tab="login">Log in</button>
         <button class="auth-tab" data-auth-tab="signup">Sign up</button>
@@ -39,14 +39,14 @@
 
   <div id="appView" class="app hidden">
     <aside class="sidebar">
-      <div class="brand"><div class="mark">F</div><div><strong>FairShare</strong><span>Shared expenses</span></div></div>
+      <div class="brand"><div class="mark">R</div><div><strong>Rekapuang</strong><span>Shared expenses</span></div></div>
       <nav class="nav">
         <button class="active" data-tab="dashboard">Dashboard</button>
         <button data-tab="friends">Friends</button>
         <button data-tab="groups">Groups</button>
       </nav>
       <div class="sidebottom">
-        <div class="mini-profile"><div class="avatar" id="sideAvatar">Y</div><div class="profile-copy"><strong id="sideName">You</strong><span id="sideEmail"></span></div></div>
+        <button class="mini-profile profile-button" type="button" onclick="showAvatarPicker()" title="Change avatar"><div class="avatar" id="sideAvatar">Y</div><div class="profile-copy"><strong id="sideName">You</strong><span id="sideEmail"></span></div><span class="edit-avatar">Edit</span></button>
         <button id="logoutBtn">Log out</button>
       </div>
     </aside>
