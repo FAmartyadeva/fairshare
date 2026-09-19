@@ -476,3 +476,21 @@ body.modal-open{overflow:hidden}
 @media(max-width:430px){
   .mobile-group-identity h1{font-size:34px}.mobile-group-body{padding-left:11px;padding-right:11px}.mobile-activity-list{padding-left:10px;padding-right:10px}.mobile-tx{grid-template-columns:35px 40px minmax(0,1fr) auto;gap:7px}.mobile-tx-icon{width:40px;height:40px}.mobile-tx-money{max-width:104px}.expense-mobile-form{padding-left:15px;padding-right:15px}.expense-desc-row,.expense-amount-row{grid-template-columns:58px 1fr}.expense-big-icon{width:58px;height:58px}.expense-preview{margin-left:70px}.expense-date-row{margin-left:70px}
 }
+
+/* Rekapuang v8.4 — mobile pull to refresh */
+.pull-refresh-indicator{display:none}
+@media(max-width:760px){
+  html,body{overscroll-behavior-y:contain}
+  .pull-refresh-indicator{
+    display:flex;position:fixed;z-index:120;left:50%;top:max(10px,env(safe-area-inset-top));
+    align-items:center;gap:8px;padding:9px 13px;border:1px solid rgba(0,85,166,.12);border-radius:999px;
+    background:rgba(255,255,255,.96);box-shadow:0 8px 26px rgba(22,49,83,.16);color:#0055A6;font-size:13px;font-weight:700;
+    opacity:0;pointer-events:none;transform:translate(-50%,calc(-64px + var(--pull-distance,0px)));transition:opacity .16s ease,transform .12s ease;
+  }
+  .pull-refresh-indicator.visible{opacity:1}
+  .pull-refresh-indicator.ready{background:#EAF4FF}
+  .pull-refresh-indicator.refreshing{transform:translate(-50%,8px)}
+  .pull-refresh-indicator.refreshing .pull-refresh-icon{animation:rekapuang-spin .75s linear infinite}
+  .pull-refresh-icon{display:inline-grid;place-items:center;width:20px;height:20px;font-size:18px;line-height:1}
+  @keyframes rekapuang-spin{to{transform:rotate(360deg)}}
+}

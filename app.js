@@ -8,6 +8,52 @@ const CURRENCIES = ['IDR','USD','SGD','EUR','GBP','JPY','AUD','MYR','CNY','THB']
 const CURRENCY_LOCALE = {IDR:'id-ID',USD:'en-US',SGD:'en-SG',EUR:'de-DE',GBP:'en-GB',JPY:'ja-JP',AUD:'en-AU',MYR:'ms-MY',CNY:'zh-CN',THB:'th-TH'};
 const AVATARS = ['💸','💰','🧾','🐼','🐯','🦊','🐸','🐧','🚀','🌊','⭐','🪙','😎','🤓','🥳','🧠','🦁','🐨','🐙','🦄','🍜','☕','✈️','🎮'];
 const GROUP_ICONS = ['🍜','☕','✈️','🏠','🏖️','🎉','🎓','💼','🎮','🎬','🍻','🍕','🚗','🛒','🏕️','⚽','🎵','💳','🧳','🎁','🏃','🐾','🌴','⭐'];
+const VIEW_SESSION_KEY = 'rekapuang:lastView';
+let pullRefreshBound = false;
+function rememberView(view,groupId=null){try{sessionStorage.setItem(VIEW_SESSION_KEY,JSON.stringify({view,groupId:groupId||null}))}catch(_){}}
+function readRememberedView(){try{return JSON.parse(sessionStorage.getItem(VIEW_SESSION_KEY)||'null')}catch(_){return null}}
+function clearRememberedView(){try{sessionStorage.removeItem(VIEW_SESSION_KEY)}catch(_){}}
+async function restoreRememberedView(){
+  const saved=readRememberedView();
+  if(saved?.view==='group'&&saved.groupId&&state.groups.some(g=>g.id===saved.groupId)){await openGroup(saved.groupId);return}
+  if(saved?.view==='friends'){await loadFriends();renderFriends();return}
+  if(saved?.view==='groups'){await loadGroups();renderGroups();return}
+  renderDashboard();
+}
+async function refreshCurrentView(){
+  await loadProfile();
+  $('sideName').textContent=state.profile.display_name;$('sideEmail').textContent=state.user.email;renderSideAvatar();
+  const saved=readRememberedView();
+  if(saved?.view==='group'&&saved.groupId){await loadGroups();if(state.groups.some(g=>g.id===saved.groupId)){await openGroup(saved.groupId);return}clearRememberedView()}
+  if(saved?.view==='friends'){await loadFriends();renderFriends();return}
+  if(saved?.view==='groups'){await loadGroups();renderGroups();return}
+  await Promise.all([loadFriends(),loadGroups()]);renderDashboard();
+}
+function setupPullToRefresh(){
+  if(pullRefreshBound)return;pullRefreshBound=true;
+  const indicator=document.createElement('div');indicator.id='pullRefreshIndicator';indicator.className='pull-refresh-indicator';indicator.innerHTML='<span class="pull-refresh-icon">↓</span><span class="pull-refresh-text">Pull to refresh</span>';document.body.appendChild(indicator);
+  let startY=0,distance=0,tracking=false,refreshing=false;
+  const reset=()=>{distance=0;tracking=false;indicator.classList.remove('visible','ready');if(!refreshing)indicator.classList.remove('refreshing')};
+  document.addEventListener('touchstart',e=>{
+    if(refreshing||!window.matchMedia('(max-width:760px)').matches||window.scrollY>1||$('modal')?.classList.contains('show')||e.touches.length!==1)return;
+    startY=e.touches[0].clientY;distance=0;tracking=true;
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!tracking||e.touches.length!==1)return;
+    const dy=e.touches[0].clientY-startY;if(dy<=0){reset();return}
+    distance=Math.min(120,dy*.55);if(distance<8)return;
+    e.preventDefault();indicator.classList.add('visible');indicator.style.setProperty('--pull-distance',`${distance}px`);
+    const ready=distance>=72;indicator.classList.toggle('ready',ready);indicator.querySelector('.pull-refresh-text').textContent=ready?'Release to refresh':'Pull to refresh';indicator.querySelector('.pull-refresh-icon').textContent=ready?'↻':'↓';
+  },{passive:false});
+  document.addEventListener('touchend',async()=>{
+    if(!tracking)return;const shouldRefresh=distance>=72;tracking=false;
+    if(!shouldRefresh){reset();return}
+    refreshing=true;indicator.classList.add('refreshing','visible');indicator.classList.remove('ready');indicator.querySelector('.pull-refresh-icon').textContent='↻';indicator.querySelector('.pull-refresh-text').textContent='Refreshing…';
+    try{await refreshCurrentView();toast('Updated')}catch(err){console.error(err);toast(err.message||'Refresh failed')}
+    finally{setTimeout(()=>{refreshing=false;indicator.style.removeProperty('--pull-distance');indicator.classList.remove('visible','refreshing','ready');indicator.querySelector('.pull-refresh-icon').textContent='↓';indicator.querySelector('.pull-refresh-text').textContent='Pull to refresh'},350)}
+  },{passive:true});
+  document.addEventListener('touchcancel',reset,{passive:true});
+}
 const money = (n,currency='IDR') => new Intl.NumberFormat(CURRENCY_LOCALE[currency]||'en-US',{style:'currency',currency,maximumFractionDigits:['IDR','JPY'].includes(currency)?0:2}).format(Number(n)||0);
 const rp = n => money(n,'IDR');
 const esc = s => String(s ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -42,11 +88,11 @@ async function init(){
   sb.auth.onAuthStateChange(async (_event,session)=>{if(session?.user)await enterApp(session.user);else showAuth()});
 }
 function showAuth(){$('authView').classList.remove('hidden');$('appView').classList.add('hidden')}
-async function enterApp(user){state.user=user;await loadProfile();$('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('sideName').textContent=state.profile.display_name;$('sideEmail').textContent=user.email;renderSideAvatar();await Promise.all([loadFriends(),loadGroups()]);renderDashboard();}
+async function enterApp(user){state.user=user;await loadProfile();$('authView').classList.add('hidden');$('appView').classList.remove('hidden');$('sideName').textContent=state.profile.display_name;$('sideEmail').textContent=user.email;renderSideAvatar();await Promise.all([loadFriends(),loadGroups()]);setupPullToRefresh();await restoreRememberedView();}
 
 $('loginForm').onsubmit=async e=>{e.preventDefault();const btn=e.submitter;btn.disabled=true;btn.textContent='Logging in...';const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){toast(error.message);btn.disabled=false;btn.textContent='Log in'}};
 $('signupForm').onsubmit=async e=>{e.preventDefault();const btn=e.submitter;btn.disabled=true;btn.textContent='Creating...';const name=$('signupName').value.trim();const {error}=await sb.auth.signUp({email:$('signupEmail').value.trim(),password:$('signupPassword').value,options:{data:{display_name:name}}});if(error)toast(error.message);else toast('Account created. Check your email if confirmation is enabled.');btn.disabled=false;btn.textContent='Create account'};
-$('logoutBtn').onclick=()=>sb.auth.signOut();
+$('logoutBtn').onclick=()=>{clearRememberedView();sb.auth.signOut()};
 
 async function loadProfile(){
   let {data,error}=await sb.from('profiles').select('*').eq('id',state.user.id).maybeSingle();
@@ -66,7 +112,7 @@ async function loadFriends(){
 }
 async function loadGroups(){const {data,error}=await sb.rpc('get_my_groups_v2');if(error)throw error;state.groups=data||[]}
 
-function setTab(tab,title,sub){document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(tab).classList.remove('hidden');$('pageTitle').textContent=title;$('pageSub').textContent=sub;$('topActions').innerHTML=''}
+function setTab(tab,title,sub){rememberView(tab);state.activeGroup=null;document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===tab));document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(tab).classList.remove('hidden');$('pageTitle').textContent=title;$('pageSub').textContent=sub;$('topActions').innerHTML=''}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='dashboard')renderDashboard();if(b.dataset.tab==='friends'){await loadFriends();renderFriends()}if(b.dataset.tab==='groups'){await loadGroups();renderGroups()}});
 
 function renderSideAvatar(){const el=$('sideAvatar');if(!el)return;const key=state.profile?.avatar_key||'';el.textContent=AVATARS.includes(key)?key:initials(state.profile?.display_name);el.classList.toggle('emoji-avatar',AVATARS.includes(key))}
@@ -89,7 +135,7 @@ window.selectGroupIcon=(el,key)=>{const input=$('groupIconInput');if(input)input
 document.addEventListener('submit',async e=>{if(e.target.id==='groupForm'){e.preventDefault();const ids=[...e.target.querySelectorAll('input[name=friend]:checked')].map(x=>x.value);const icon=$('groupIconInput')?.value||GROUP_ICONS[0];const {data,error}=await sb.rpc('create_group_with_members',{group_name:$('groupName').value.trim(),group_description:$('groupDesc').value.trim(),member_ids:ids});if(error)toast(error.message);else{const iconResult=await sb.rpc('set_group_icon',{target_group_id:data,new_icon_key:icon});if(iconResult.error)toast(iconResult.error.message);closeModal();await loadGroups();toast('Group created');openGroup(data)}}});
 
 window.openGroup=async id=>{
-  const group=state.groups.find(g=>g.id===id)||{id,name:'Group'};state.activeGroup=group;
+  const group=state.groups.find(g=>g.id===id)||{id,name:'Group'};state.activeGroup=group;rememberView('group',id);
   const [{data:members,error:e1},{data:expenses,error:e2},{data:settlements,error:e3}]=await Promise.all([
     sb.from('group_members').select('user_id,profiles(id,display_name,email,avatar_key)').eq('group_id',id),
     sb.from('expenses').select('id,description,amount,currency,expense_date,paid_by,created_at,payer:profiles!expenses_paid_by_fkey(id,display_name,avatar_key),expense_splits(user_id,amount,profile:profiles(id,display_name,email,avatar_key))').eq('group_id',id).order('created_at',{ascending:false}),
