@@ -94,7 +94,7 @@ window.openGroup=async id=>{
     sb.from('group_members').select('user_id,profiles(id,display_name,email,avatar_key)').eq('group_id',id),
     sb.from('expenses').select('id,description,amount,currency,expense_date,paid_by,created_at,payer:profiles!expenses_paid_by_fkey(id,display_name,avatar_key),expense_splits(user_id,amount,profile:profiles(id,display_name,email,avatar_key))').eq('group_id',id).order('created_at',{ascending:false}),
     sb.from('settlements').select('id,from_user,to_user,amount,currency,settlement_date,created_at,recorded_by,from_profile:profiles!settlements_from_user_fkey(id,display_name),to_profile:profiles!settlements_to_user_fkey(id,display_name),recorder:profiles!settlements_recorded_by_fkey(id,display_name)').eq('group_id',id).order('settlement_date',{ascending:false}).order('created_at',{ascending:false})
-  ]);if(e1)throw e1;if(e2)throw e2;if(e3)throw e3;state.members=(members||[]).map(m=>m.profiles);state.expenses=expenses||[];state.settlements=settlements||[];renderGroup();
+  ]);if(e1)throw e1;if(e2)throw e2;if(e3)throw e3;state.members=(members||[]).map(m=>m.profiles);state.expenses=(expenses||[]).sort((a,b)=>{const ad=new Date(a.expense_date||a.created_at),bd=new Date(b.expense_date||b.created_at);const byDate=bd-ad;return byDate||new Date(b.created_at)-new Date(a.created_at)});state.settlements=(settlements||[]).sort((a,b)=>{const ad=new Date(a.settlement_date||a.created_at),bd=new Date(b.settlement_date||b.created_at);const byDate=bd-ad;return byDate||new Date(b.created_at)-new Date(a.created_at)});renderGroup();
 }
 function currenciesInGroup(){return [...new Set([...state.expenses.map(e=>e.currency||'IDR'),...state.settlements.map(s=>s.currency||'IDR')])].sort((a,b)=>a==='IDR'?-1:b==='IDR'?1:a.localeCompare(b))}
 function calculateBalances(currency='IDR'){const b=Object.fromEntries(state.members.map(m=>[m.id,0]));for(const e of state.expenses.filter(x=>(x.currency||'IDR')===currency)){b[e.paid_by]=(b[e.paid_by]||0)+Number(e.amount);for(const sp of e.expense_splits)b[sp.user_id]=(b[sp.user_id]||0)-Number(sp.amount)}for(const st of state.settlements.filter(x=>(x.currency||'IDR')===currency)){b[st.from_user]=(b[st.from_user]||0)+Number(st.amount);b[st.to_user]=(b[st.to_user]||0)-Number(st.amount)}return b}
@@ -118,8 +118,8 @@ function expenseUserPosition(e){
 }
 function mobileTimeline(){
   const expenses=state.expenses.map(e=>({kind:'expense',date:e.expense_date||e.created_at,created:e.created_at,data:e}));
-  const settlements=state.settlements.map(st=>({kind:'settlement',date:st.settlement_date||st.created_at,created:st.settlement_date||st.created_at,data:st}));
-  return [...expenses,...settlements].sort((a,b)=>new Date(b.created)-new Date(a.created));
+  const settlements=state.settlements.map(st=>({kind:'settlement',date:st.settlement_date||st.created_at,created:st.created_at,data:st}));
+  return [...expenses,...settlements].sort((a,b)=>{const byDate=new Date(b.date)-new Date(a.date);return byDate||new Date(b.created)-new Date(a.created)});
 }
 function mobileTimelineHtml(){
   const rows=mobileTimeline();if(!rows.length)return '<div class="mobile-empty">No activity yet. Add the first expense for this group.</div>';
